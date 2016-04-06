@@ -4,7 +4,10 @@
 using namespace cv;
 
 void show_mat(const cv::Mat &image, std::string const &win_name);
-cv::Mat& invert_mat(cv::Mat &mat);
+
+cv::Mat &invert_mat(cv::Mat &mat);
+
+cv::Mat& invert_mat_pointer(cv::Mat &mat);
 
 int main(int argc, char **argv) {
     if (argc != 3) {
@@ -22,7 +25,7 @@ int main(int argc, char **argv) {
 
     show_mat(image, "Input");
 
-    image = invert_mat(image);
+    image = invert_mat_pointer(image);
 
     show_mat(image, "Output");
 
@@ -51,6 +54,41 @@ cv::Mat& invert_mat(cv::Mat &mat) {
                 (*it)[0] = ~(*it)[0];
                 (*it)[1] = ~(*it)[1];
                 (*it)[2] = ~(*it)[2];
+            }
+        }
+    }
+
+    return mat;
+}
+
+cv::Mat& invert_mat_pointer(cv::Mat &mat) {
+    int channels = mat.channels();
+
+    int nRows = mat.rows;
+    int nCols = mat.cols;
+
+    int i, j;
+    switch (channels) {
+        case 1: {
+//            gray scale image
+            uchar *p;
+            for (i = 0; i < nRows; ++i) {
+                p = mat.ptr<uchar>(i);
+                for (j = 0; j < nCols; ++j) {
+                    p[j] = ~p[j];
+                }
+            }
+        }
+        case 3: {
+//            RGB image
+            Vec3b *p;
+            for (i = 0; i < nRows; ++i) {
+                p = mat.ptr<Vec3b>(i);
+                for (j = 0; j < nCols; ++j) {
+                    p[j][0] = ~p[j][0];
+                    p[j][1] = ~p[j][1];
+                    p[j][2] = ~p[j][2];
+                }
             }
         }
     }
